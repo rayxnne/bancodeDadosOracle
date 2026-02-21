@@ -1,0 +1,120 @@
+Exercícios propostos na aula para prática dos comandos SQL.
+
+--1. Exibir o nome e e-mail dos alunos. 
+  SELECT alu_nome, alu_email1, alu_email2 
+  FROM aluno 
+
+--2. Exibir o CPF e nome dos alunos em ordem alfabética. 
+  SELECT alu_cpf, alu_nome 
+  FROM aluno 
+  ORDER BY 2; 
+
+--3. Exibir o código, nome e duração dos cursos, utilize apelido para as colunas. 
+  SELECT cur_codigo AS Codigo, cur_nome AS Nome, cur_duracao AS Duracao 
+  FROM curso 
+  ORDER BY cur_codigo; 
+
+--4. Exibir o nome dos cursos com duração de 20h; exibir em ordem de nome. 
+  SELECT cur_nome 
+  FROM curso 
+  WHERE cur_duracao = 20 --'no data found' pois os cursos cadastrados tem duração de 25, 30, 35 e 40 
+  ORDER BY cur_nome; 
+
+--5. Exibir o nome dos professores e o nome do curso ao qual está vinculado. 
+  SELECT professor.pro_nome, curso.cur_nome -- 
+  FROM professor, curso 
+  WHERE professor.pro_codigo = curso.pro_codigo 
+
+--6. Exibir o nome, cpf, celular e email dos alunos da cidade de Cajamar. 
+  SELECT alu_nome AS Nome, alu_cpf AS CPF, alu_celular AS Celular, alu_email1 AS Email 
+  FROM aluno 
+  WHERE alu_cidade = 'Cajamar'; 
+
+--7. Exibir o nome e os emails dos alunos de fora do estado de São Paulo. 
+  SELECT alu_nome AS Nome, alu_email1 AS Email 
+  FROM aluno 
+  WHERE alu_uf != 'SP'; --'no data found' pois todos os alunos cadastrados sao do estado de SP 
+
+--8. Exibir o nome do aluno e o(s) número(s) da(s) matrículas. 
+  SELECT aluno.alu_nome AS Nome, matricula.mat_numero AS Matricula 
+  FROM aluno, matricula 
+  WHERE aluno.alu_cpf = matricula.alu_cpf; 
+
+--9. Quais são os cursos do período da tarde? 
+  SELECT cur_nome AS Nome 
+  FROM curso 
+  WHERE cur_turno = 'Vespertino'; 
+
+--10. Quais são os alunos matriculados nos cursos do período da manhã.  
+  SELECT aluno.alu_nome AS ALUNO, curso.cur_nome AS Curso  
+  FROM aluno INNER JOIN matricula USING(alu_cpf)  
+  INNER JOIN curso USING(cur_codigo)  
+  WHERE curso.cur_turno = 'Matutino'; 
+
+--11. Para cada matrícula, exibir o nome do aluno, nome do curso e nome do professor 
+  SELECT aluno.alu_nome AS Aluno, curso.cur_nome AS Curso, professor.pro_nome AS Professor  
+  FROM aluno INNER JOIN matricula USING(alu_cpf)  
+  INNER JOIN curso USING(cur_codigo)  
+  INNER JOIN professor USING(pro_codigo) 
+  ORDER BY matricula.mat_numero; 
+
+--12. Exibir a quantidade de alunos cadastrados. 
+  SELECT COUNT(*) 
+  FROM aluno 
+
+--13. Exibir a quantidade de professores cadastrados. 
+  SELECT COUNT(*) 
+  FROM professor 
+
+--14. Recuperar a quantidade de alunos em cada curso. 
+  SELECT COUNT(*) 
+  FROM aluno, matricula; 
+
+--15. Em quais locais os cursos são oferecidos? Exibir o nome, cidade, telefone e e-mail 
+  SELECT localcurso.loc_nome AS Local, localcurso.loc_cidade AS Cidade, 
+  localcurso.loc_telefone AS Telefone, localcurso.loc_email AS Email 
+  FROM localcurso 
+
+--16. Exibir o nome do curso e sua respectiva modalidade.  
+  SELECT curso.cur_nome AS Curso, modalidade.mod_nome AS Modalidade 
+  FROM curso, modalidade 
+  WHERE curso.mod_codigo = modalidade.mod_codigo; 
+
+--17. Quais cursos estão sendo oferecidos neste semestre? Mostrar o código e nome do curso, requisito, duração e o tipo do ambiente. 
+  SELECT * 
+  FROM tipo 
+  SELECT curso.cur_nome AS Nome, curso.cur_requisitos AS Requisitos, curso.cur_duracao 
+  AS Duracao, tipo.tip_nome AS Tipo 
+  FROM curso, ambiente, tipo 
+  WHERE curso.amb_codigo = ambiente.amb_codigo AND  
+  ambiente.tip_codigo = tipo.tip_codigo; 
+
+--18. Exibir o nome dos alunos do curso de Banco de Dados.  
+  SELECT aluno.alu_nome AS NomeAluno, curso.cur_nome AS NomeCurso 
+  FROM aluno, matricula, curso 
+  WHERE aluno.alu_cpf = matricula.alu_cpf AND  
+  matricula.cur_codigo = curso.cur_codigo AND  
+  curso.cur_nome = 'Banco de Dados Oracle'; 
+
+--19. Exibir o nome dos alunos que estão matriculados em algum curso em 2025. Mostrar 
+  somente ocorrência de cada nome (eliminar duplicatas). 
+  SELECT aluno.alu_nome AS Nome 
+  FROM aluno, matricula, curso 
+  WHERE aluno.alu_cpf = matricula.alu_cpf AND 
+  matricula.cur_codigo = curso.cur_codigo AND 
+  curso.cur_datainicio >= '01/2025' AND  
+  curso.cur_datafim <= '12/2025'; 
+
+--20. Exibir o CPF e nome dos alunos que em 2024 participaram e concluíram o curso de Python da modalidade EAD do professor Elias. Ordenar por nome. 
+  SELECT aluno.alu_cpf AS CPF, aluno.alu_nome AS NomeAluno 
+  FROM aluno, matricula, curso, modalidade, professor 
+  WHERE aluno.alu_cpf = matricula.alu_cpf AND 
+  matricula.cur_codigo = curso.cur_codigo AND 
+  curso.cur_nome = 'Python' AND 
+  curso.cur_datainicio >= '01/2024' AND  
+  curso.cur_datafim <= '12/2024' AND  
+  curso.mod_codigo = modalidade.mod_codigo AND  
+  modalidade.mod_nome = 'EAD' AND 
+  curso.pro_codigo = professor.pro_codigo AND  
+  professor.pro_nome = 'Elias' 
+  ORDER BY aluno.alu_nome; 
